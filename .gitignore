@@ -1,0 +1,7 @@
+github.com
+golang.org
+swagger
+*.exe
+*.exe~
+*.tmp
+*.zip
