@@ -5,6 +5,8 @@ import (
 
 	"errors"
 
+	"os"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 )
@@ -18,6 +20,7 @@ type Account struct {
 
 var x *xorm.Engine
 
+//数据库初始化
 func init() {
 	var err error
 	x, err = xorm.NewEngine("mysql", "root:root@(127.0.0.1:3306)/xorm")
@@ -29,6 +32,14 @@ func init() {
 	if err != nil {
 		log.Fatalf("fail to sync database : %v", err)
 	}
+
+	//记录日志
+	f, err := os.Create("sql.log")
+	if err != nil {
+		log.Fatalf("fail to get rows:%v\n", err)
+	}
+	// x.Logger = xorm.NewSimpleLogger(f)
+	// x.ShowSQL = true
 }
 func NewAccount(name string, balance float64) error {
 	_, err := x.Insert(&Account{Name: name, Balance: balance})
@@ -133,4 +144,8 @@ func GetAccountDescBalance() (as []*Account, err error) {
 func DeleteAccount(id int64) error {
 	_, err := x.Delete(&Account{Id: id})
 	return err
+}
+func GetCount() (int64, error) {
+	return x.Count(new(Account))
+	x.Limit
 }

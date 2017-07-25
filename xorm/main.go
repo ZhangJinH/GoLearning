@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 const prompt = `please enter number of operation:
@@ -13,8 +14,18 @@ const prompt = `please enter number of operation:
 6.List Account by id
 7.List Account by balance
 8.Delete account
-9.Exit
+9.Get TotalCount
+10.Iterate Account
+11.Only get name
+12.except get name
+13.Offset data 1 and limit 2
+0.Exit
 `
+
+var printFn = func(idx int, bean interface{}) error {
+	fmt.Printf("%d,%#v\n", idx, bean.(*Account))
+	return nil
+}
 
 func main() {
 	fmt.Println("welcome bank of xorm")
@@ -102,6 +113,43 @@ Exit:
 				fmt.Println(err)
 			}
 		case 9:
+			count, err := GetCount()
+			if err != nil {
+				log.Fatalf("fail to get Account count:%v\n", err)
+			}
+			fmt.Printf("Account count :%d\n", count)
+		//迭代查询
+		case 10:
+			//基本方法
+			fmt.Println("Query all records:")
+			x.Iterate(new(Account), printFn)
+			fmt.Println()
+			//使用rows更加高级的查询
+			a := new(Account)
+			rows, err := x.Rows(new(Account))
+			if err != nil {
+				log.Fatalf("fail to get rows:%v\n", err)
+			}
+			defer rows.Close()
+			for rows.Next() {
+				if err = rows.Scan(a); err != nil {
+					log.Fatalf("fail to get rows:%v\n", err)
+				}
+				fmt.Printf("%#v\n", a)
+			}
+		case 11:
+			//只获取name
+			fmt.Println("Only get name:")
+			x.Cols("name").Iterate(new(Account), printFn)
+		case 12:
+			//除了name其他都获取
+			fmt.Println("except get name:")
+			x.Omit("name").Iterate(new(Account), printFn)
+		case 13:
+			//分页（获取多少条数据，偏移量）
+			fmt.Println("Offset data 1 and limit 2:")
+			x.Limit(1, 2).Iterate(new(Account), printFn)
+		case 0:
 			break Exit
 		}
 	}
