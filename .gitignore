@@ -5,3 +5,5 @@ swagger
 *.exe~
 *.tmp
 *.zip
+beeblog
+myblog
