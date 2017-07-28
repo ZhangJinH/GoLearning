@@ -49,7 +49,7 @@ func (c *CommonController) Login() {
 			res["msg"] = "密码错误"
 			c.Data["json"] = res
 		} else {
-			fmt.Printf("the user is: %#v", &user)
+			fmt.Printf("the user is: %v", user)
 			res["code"] = "1002"
 			res["msg"] = "登陆成功"
 			idStr := strconv.Itoa(user.Id)
@@ -80,8 +80,7 @@ func (c *CommonController) CheckUsername() {
 }
 
 func (c *CommonController) GetUserInfoById() {
-	idStr := c.GetString("id")
-	id, _ := strconv.Atoi(idStr)
+	id := c.GetSession("uid").(int)
 	v, err := model.GetUserInfo(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
