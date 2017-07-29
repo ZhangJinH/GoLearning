@@ -2,7 +2,6 @@ package model
 
 import (
 	"log"
-	"time"
 
 	"fmt"
 
@@ -23,11 +22,11 @@ type Product struct {
 }
 
 type Sell struct {
-	Id    int       `xorm:"not null pk autoincr INT(11)"`
-	Pid   int       `xorm:"index INT(11)"`
-	Place string    `xorm:"VARCHAR(255)"`
-	Num   int       `xorm:"INT(11)"`
-	Time  time.Time `xorm:"DATETIME"`
+	Id    int    `xorm:"not null pk autoincr INT(11)"`
+	Pid   int    `xorm:"index INT(11)"`
+	Place string `xorm:"VARCHAR(255)"`
+	Num   int    `xorm:"INT(11)"`
+	Time  string `xorm:"VARCHAR(255)"`
 }
 
 type User struct {
@@ -144,7 +143,52 @@ func DeleteProd(id int) error {
 
 //product结束
 
+func AddSell(m *Sell) error {
+	_, err := x.Insert(m)
+	return err
+}
+func CheckAlreadySet(m *Sell) (bool, error) {
+	v := &Sell{Pid: m.Pid, Time: m.Time, Place: m.Place}
+	has, err := x.Get(v)
+	if err != nil {
+		return false, err
+	} else if !has {
+		return false, nil
+	}
+	return true, nil
+}
+
+func GetSellCount() (int64, error) {
+	sell := new(Sell)
+	total, err := x.Count(sell)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+type SellInfo struct {
+	Sell `xorm:"extends"`
+	Name string
+}
+
+//获取带商品名的销售
+func GetSellByPage(current, pagesize int) ([]*SellInfo, error) {
+	sells := make([]*SellInfo, 0)
+	err := x.Sql("SELECT s.*,p.name FROM sell s,product p WHERE s.pid = p.pid").Find(&sells)
+	if err != nil {
+		return nil, err
+	}
+	return sells, nil
+}
+
+func DeleteSell(id int) error {
+	_, err := x.Delete(&Sell{Id: id})
+	return err
+}
+
 //sell开始
+
 //sell结束
 
 //juris开始
