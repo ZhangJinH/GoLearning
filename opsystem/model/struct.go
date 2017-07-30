@@ -143,6 +143,7 @@ func DeleteProd(id int) error {
 
 //product结束
 
+//sell开始
 func AddSell(m *Sell) error {
 	_, err := x.Insert(m)
 	return err
@@ -187,7 +188,10 @@ func DeleteSell(id int) error {
 	return err
 }
 
-//sell开始
+func UpdateSell(m *Sell) error {
+	_,err := x.Id(m.Id).Update(m)
+	return err
+}
 
 //sell结束
 

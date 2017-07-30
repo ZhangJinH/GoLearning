@@ -37,5 +37,7 @@ func main() {
 	beego.Router("/sell/count", &controllers.SellController{}, "get:GetCount")
 	beego.Router("/sell/delete", &controllers.SellController{}, "delete:Delete")
 	beego.Router("/sell/get", &controllers.SellController{}, "post:GetSellByPage")
+	beego.Router("/sell/update", &controllers.SellController{}, "put:Update")
+	
 	beego.Run()
 }

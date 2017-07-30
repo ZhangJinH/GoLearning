@@ -75,3 +75,17 @@ func (c *SellController) Delete() {
 	}
 	c.ServeJSON()
 }
+
+func (c *SellController) Update() {
+	var v model.Sell
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
+		if err := model.UpdateSell(&v); err == nil {
+			c.Data["json"] = "ok"
+		} else {
+			c.Data["json"] = err.Error()
+		}
+	} else {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
