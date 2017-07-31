@@ -89,3 +89,23 @@ func (c *SellController) Update() {
 	}
 	c.ServeJSON()
 }
+
+func (c *SellController) GetTotalSellNums() {
+	if nums, err := model.GetTotalSellNums(); err == nil {
+		c.Data["json"] = nums
+	} else {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
+
+func (c *SellController) GetTotalSellPlace() {
+	idStr := c.GetString("pid")
+	id, _ := strconv.Atoi(idStr)
+	if nums, err := model.GetTotalSellPlace(id); err == nil {
+		c.Data["json"] = nums
+	} else {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}

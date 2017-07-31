@@ -86,7 +86,7 @@ func GetUserByUsername(username string) (*User, error) {
 
 func GetUserInfo(id int) (*User, error) {
 	user := &User{Id: id}
-	has, err := x.Cols("nickname", "age", "sex", "jid").Get(user)
+	has, err := x.Cols("nickname", "age", "sex", "jid", "username").Get(user)
 	if err != nil {
 		return nil, err
 	} else if !has {
@@ -176,7 +176,7 @@ type SellInfo struct {
 //获取带商品名的销售
 func GetSellByPage(current, pagesize int) ([]*SellInfo, error) {
 	sells := make([]*SellInfo, 0)
-	err := x.Sql("SELECT s.*,p.name FROM sell s,product p WHERE s.pid = p.pid").Find(&sells)
+	err := x.Sql("SELECT s.*,p.name FROM sell s,product p WHERE s.pid = p.pid limit ?,?", (current-1)*pagesize, pagesize).Find(&sells)
 	if err != nil {
 		return nil, err
 	}
@@ -189,8 +189,46 @@ func DeleteSell(id int) error {
 }
 
 func UpdateSell(m *Sell) error {
-	_,err := x.Id(m.Id).Update(m)
+	_, err := x.Id(m.Id).Update(m)
 	return err
+}
+
+type SellNums struct {
+	Name  string
+	Value int64
+}
+
+func GetTotalSellNums() ([]*SellNums, error) {
+	prods, err := GetAllProds()
+	nums := make([]*SellNums, 0)
+	if err == nil {
+		for _, v := range prods {
+			sell := new(Sell)
+			total, err := x.Where("pid = ?", v.Pid).SumInt(sell, "num")
+			if err == nil {
+				num := &SellNums{Name: v.Name, Value: total}
+				nums = append(nums, num)
+			} else {
+				return nil, err
+			}
+		}
+		return nums, nil
+	}
+	return nil, err
+}
+
+type PlaceSell struct {
+	Place string
+	Total int64
+}
+
+func GetTotalSellPlace(id int) ([]*PlaceSell, error) {
+	nums := make([]*PlaceSell, 0)
+	err := x.Sql("SELECT place, SUM(num) total FROM sell WHERE place IN ( SELECT place FROM sell GROUP BY place HAVING COUNT(place) > 0 ) AND pid = ? GROUP BY place", id).Find(&nums)
+	if err == nil {
+		return nums, nil
+	}
+	return nil, err
 }
 
 //sell结束
