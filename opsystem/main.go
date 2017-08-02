@@ -40,6 +40,7 @@ func main() {
 	beego.Router("/sell/update", &controllers.SellController{}, "put:Update")
 	beego.Router("/sell/gettotalnums", &controllers.SellController{}, "get:GetTotalSellNums")
 	beego.Router("/sell/gettotalplace", &controllers.SellController{}, "get:GetTotalSellPlace")
+	beego.Router("/sell/getprodsellmonthly", &controllers.SellController{}, "get:GetProdSellMonthly")
 
 	beego.Run()
 }

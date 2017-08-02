@@ -222,11 +222,25 @@ type PlaceSell struct {
 	Total int64
 }
 
-func GetTotalSellPlace(id int) ([]*PlaceSell, error) {
+func GetTotalSellPlace(id int, date string) ([]*PlaceSell, error) {
 	nums := make([]*PlaceSell, 0)
-	err := x.Sql("SELECT place, SUM(num) total FROM sell WHERE place IN ( SELECT place FROM sell GROUP BY place HAVING COUNT(place) > 0 ) AND pid = ? GROUP BY place", id).Find(&nums)
+	err := x.Sql("SELECT place,SUM(num) total FROM sell WHERE place IN ( SELECT place FROM sell GROUP BY place HAVING COUNT(place) > 0 ) AND pid = ? AND time LIKE ? GROUP BY place", id, "%"+date+"%").Find(&nums)
 	if err == nil {
 		return nums, nil
+	}
+	return nil, err
+}
+
+type DateSell struct {
+	Time  string
+	Total int64
+}
+
+func GetProdSellMonthly(id int, date string) ([]*DateSell, error) {
+	sells := make([]*DateSell, 0)
+	err := x.Sql("SELECT time, SUM(num) total FROM sell WHERE time IN ( SELECT time FROM sell WHERE pid = ? GROUP BY time HAVING COUNT(time) > 0 ) AND pid = ? AND time LIKE ? GROUP BY time", id, id, "%"+date+"%").Find(&sells)
+	if err == nil {
+		return sells, nil
 	}
 	return nil, err
 }

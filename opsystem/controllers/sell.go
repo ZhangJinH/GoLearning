@@ -102,7 +102,20 @@ func (c *SellController) GetTotalSellNums() {
 func (c *SellController) GetTotalSellPlace() {
 	idStr := c.GetString("pid")
 	id, _ := strconv.Atoi(idStr)
-	if nums, err := model.GetTotalSellPlace(id); err == nil {
+	date := c.GetString("date")
+	if nums, err := model.GetTotalSellPlace(id, date); err == nil {
+		c.Data["json"] = nums
+	} else {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
+
+func (c *SellController) GetProdSellMonthly() {
+	idStr := c.GetString("pid")
+	id, _ := strconv.Atoi(idStr)
+	date := c.GetString("date")
+	if nums, err := model.GetProdSellMonthly(id, date); err == nil {
 		c.Data["json"] = nums
 	} else {
 		c.Data["json"] = err.Error()
