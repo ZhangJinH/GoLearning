@@ -15,6 +15,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+	beego.SetStaticPath("/static", "static")
 	beego.Router("/user/add", &controllers.CommonController{}, "post:AddUser")
 	beego.Router("/user/delete", &controllers.UserController{}, "post:DeleteUser")
 	beego.Router("/user/update", &controllers.UserController{}, "post:UpdateUser")
@@ -24,6 +25,7 @@ func main() {
 	beego.Router("/logout", &controllers.UserController{}, "post:LoginOut")
 	beego.Router("/checkname", &controllers.CommonController{}, "post:CheckUsername")
 	beego.Router("/user/getuserinfobyid", &controllers.CommonController{}, "get:GetUserInfoById")
+	beego.Router("/upload", &controllers.CommonController{}, "post:Upload")
 
 	beego.Router("/product/add", &controllers.ProductController{}, "post:AddProduct")
 	beego.Router("/product/update", &controllers.ProductController{}, "put:Update")

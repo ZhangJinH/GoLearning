@@ -89,3 +89,19 @@ func (c *CommonController) GetUserInfoById() {
 	}
 	c.ServeJSON()
 }
+
+func (c *CommonController) Upload() {
+	f, file, err := c.GetFile("file")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var attachment string
+	attachment = file.Filename
+	dirPath := "./upload/" + attachment
+	f.Close()
+	err = c.SaveToFile("file", dirPath)
+	if err != nil {
+		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
